@@ -2,7 +2,6 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:smartcontroller/components/cardinfo.dart';
-import 'package:smartcontroller/controllers/controller.dart';
 
 class Serre extends StatefulWidget {
   const Serre({super.key});
@@ -13,19 +12,27 @@ class Serre extends StatefulWidget {
 
 class _SerreState extends State<Serre> {
   FlutterBluetoothSerial bluetoothSerial = FlutterBluetoothSerial.instance;
+  
+  void initialiseBluetooth() async {
+    await [
+      Permission.bluetooth,
+      Permission.bluetoothAdvertise,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+      Permission.location,
+    ].request();
+  }
 
-  initialiseBluetooth() async {
-    print("in the function");
-    await bluetoothSerial.requestEnable();
-    PermissionStatus permission = await Permission.bluetooth.request();
-    if (permission.isDenied) {
-      permission = await Permission.bluetooth.request();
+  void stabeliseConnection() async {
+    if (await bluetoothSerial.isEnabled == false) {
+      bluetoothSerial.requestEnable();
     }
   }
 
   @override
   void initState() {
     initialiseBluetooth();
+    stabeliseConnection();
     super.initState();
   }
 
