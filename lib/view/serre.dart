@@ -12,11 +12,20 @@ class Serre extends StatefulWidget {
 }
 
 class _SerreState extends State<Serre> {
-  Permission permission = Permission.bluetooth;
   FlutterBluetoothSerial bluetoothSerial = FlutterBluetoothSerial.instance;
+
+  initialiseBluetooth() async {
+    print("in the function");
+    await bluetoothSerial.requestEnable();
+    PermissionStatus permission = await Permission.bluetooth.request();
+    if (permission.isDenied) {
+      permission = await Permission.bluetooth.request();
+    }
+  }
 
   @override
   void initState() {
+    initialiseBluetooth();
     super.initState();
   }
 
@@ -45,20 +54,27 @@ class _SerreState extends State<Serre> {
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Cardinfo(titleCard: "Tempirature", valueCard: "15", iconCard: const Icon(Icons.thermostat)),
-                    Cardinfo(titleCard: "Humidité", valueCard: "50", iconCard: const Icon(Icons.water_damage)),
-                  ],
-                )
-              ],
-            ),)
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Cardinfo(
+                          titleCard: "Tempirature",
+                          valueCard: "15",
+                          iconCard: const Icon(Icons.thermostat)),
+                      Cardinfo(
+                          titleCard: "Humidité",
+                          valueCard: "50",
+                          iconCard: const Icon(Icons.water_damage)),
+                    ],
+                  )
+                ],
+              ),
+            )
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
