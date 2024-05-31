@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,8 @@ class Serre extends StatefulWidget {
 
 class _SerreState extends State<Serre> {
   FlutterBluetoothSerial bluetoothSerial = FlutterBluetoothSerial.instance;
-  
+  List<BluetoothDevice> devices = [];
+
   void initialiseBluetooth() async {
     await [
       Permission.bluetooth,
@@ -25,7 +27,13 @@ class _SerreState extends State<Serre> {
 
   void stabeliseConnection() async {
     if (await bluetoothSerial.isEnabled == false) {
-      bluetoothSerial.requestEnable();
+      var response = await bluetoothSerial.requestEnable();
+      if (response == true) {
+        print("getting bounded devices");
+        devices = await bluetoothSerial.getBondedDevices();
+      } else {
+        bluetoothSerial.openSettings();
+      }
     }
   }
 
@@ -48,6 +56,121 @@ class _SerreState extends State<Serre> {
               ),
               backgroundColor: Colors.deepPurple,
               foregroundColor: Colors.white,
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(25),
+                                    topRight: Radius.circular(25)),
+                              ),
+                              height: 400,
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 5,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: StreamBuilder<List<BluetoothDevice>>(
+                                        stream: Stream.periodic(
+                                                const Duration(seconds: 1))
+                                            .asyncMap((event) => bluetoothSerial
+                                                .getBondedDevices()),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }
+                                          if (snapshot.hasData &&
+                                              snapshot.data!.isNotEmpty) {
+                                            return ListView.builder(
+                                                itemCount: devices.length,
+                                                itemBuilder: (context, index) {
+                                                  return ListTile(
+                                                    title: Text(devices[index]
+                                                        .name
+                                                        .toString()),
+                                                    subtitle: Text(
+                                                        devices[index]
+                                                            .address
+                                                            .toString()),
+                                                    leading: const Icon(
+                                                        Icons.devices),
+                                                    trailing: ElevatedButton(
+                                                      style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(Colors
+                                                                      .deepPurple),
+                                                          foregroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(
+                                                                      Colors
+                                                                          .white)),
+                                                      onPressed: () async {
+                                                        try {
+                                                          await BluetoothConnection
+                                                              .toAddress(devices[
+                                                                      index]
+                                                                  .address
+                                                                  .toString());
+                                                          if(await bluetoothSerial.isConnected){
+                                                            print("connected to device");
+                                                          }
+                                                          else{
+                                                            print("failed to connect to device");
+                                                          }
+                                                        } catch (e) {
+                                                          print(
+                                                              "failed to connect to device");
+                                                        }
+                                                      },
+                                                      child: const Icon(
+                                                          Icons.bluetooth),
+                                                    ),
+                                                  );
+                                                });
+                                          } else {
+                                            return const Center(
+                                              child: Text(
+                                                "No devices found",
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            );
+                                          }
+                                        }),
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                    },
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ))
+              ],
             )),
         body: Stack(
           children: [
