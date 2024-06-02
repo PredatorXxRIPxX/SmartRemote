@@ -11,7 +11,16 @@ class Terrain extends StatefulWidget {
   State<Terrain> createState() => _TerrainState();
 }
 
+
+
 class _TerrainState extends State<Terrain> {
+
+  @override
+  void initState() {
+    listinigData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

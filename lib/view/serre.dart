@@ -3,6 +3,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:smartcontroller/components/cardinfo.dart';
+import 'package:smartcontroller/controllers/controller.dart';
 
 class Serre extends StatefulWidget {
   const Serre({super.key});
@@ -123,21 +124,15 @@ class _SerreState extends State<Serre> {
                                                           foregroundColor:
                                                               MaterialStateProperty
                                                                   .all<Color>(
-                                                                      Colors
-                                                                          .white)),
+                                                                      const Color.fromARGB(255, 185, 135, 135))),
                                                       onPressed: () async {
                                                         try {
-                                                          await BluetoothConnection
+                                                          connection = await BluetoothConnection
                                                               .toAddress(devices[
                                                                       index]
                                                                   .address
                                                                   .toString());
-                                                          if(await bluetoothSerial.isConnected){
-                                                            print("connected to device");
-                                                          }
-                                                          else{
-                                                            print("failed to connect to device");
-                                                          }
+                                                            listinigData();
                                                         } catch (e) {
                                                           print(
                                                               "failed to connect to device");
