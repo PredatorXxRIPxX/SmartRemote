@@ -2,8 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smartcontroller/components/cardinfo.dart';
-import 'package:smartcontroller/controllers/controller.dart';
+import 'package:smartcontroller/controllers/bluetoothData.dart';
 
 class Serre extends StatefulWidget {
   const Serre({super.key});
@@ -14,6 +15,8 @@ class Serre extends StatefulWidget {
 
 class _SerreState extends State<Serre> {
   FlutterBluetoothSerial bluetoothSerial = FlutterBluetoothSerial.instance;
+  late BluetoothConnection connection;
+  late BluetoothData bluetoothData;
   List<BluetoothDevice> devices = [];
 
   void initialiseBluetooth() async {
@@ -40,6 +43,8 @@ class _SerreState extends State<Serre> {
 
   @override
   void initState() {
+    bluetoothData =
+        Provider.of<BluetoothData>(context, listen: false);
     initialiseBluetooth();
     stabeliseConnection();
     super.initState();
@@ -47,6 +52,7 @@ class _SerreState extends State<Serre> {
 
   @override
   Widget build(BuildContext context) {
+    bluetoothData = Provider.of<BluetoothData>(context);
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(75),
@@ -122,17 +128,30 @@ class _SerreState extends State<Serre> {
                                                                   .all<Color>(Colors
                                                                       .deepPurple),
                                                           foregroundColor:
-                                                              MaterialStateProperty
-                                                                  .all<Color>(
-                                                                      const Color.fromARGB(255, 185, 135, 135))),
+                                                              MaterialStateProperty.all<
+                                                                      Color>(
+                                                                  const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      185,
+                                                                      135,
+                                                                      135))),
                                                       onPressed: () async {
                                                         try {
-                                                          connection = await BluetoothConnection
-                                                              .toAddress(devices[
-                                                                      index]
-                                                                  .address
-                                                                  .toString());
-                                                            listinigData();
+                                                          connection =
+                                                              await BluetoothConnection
+                                                                  .toAddress(devices[
+                                                                          index]
+                                                                      .address
+                                                                      .toString());
+                                                          bluetoothData
+                                                                  .connection =
+                                                              connection;
+                                                          bluetoothData
+                                                              .listinigData();
+                                                          bluetoothData
+                                                              .notifyListeners();
+                                                          Navigator.pop(context);
                                                         } catch (e) {
                                                           print(
                                                               "failed to connect to device");
@@ -177,28 +196,32 @@ class _SerreState extends State<Serre> {
                       bottomLeft: Radius.circular(25),
                       bottomRight: Radius.circular(25))),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+            Consumer<BluetoothData>(
+              builder: (context, value, child) {
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Cardinfo(
-                          titleCard: "Tempirature",
-                          valueCard: "15",
-                          iconCard: const Icon(Icons.thermostat)),
-                      Cardinfo(
-                          titleCard: "Humidité",
-                          valueCard: "50",
-                          iconCard: const Icon(Icons.water_damage)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Cardinfo(
+                              titleCard: "Temperature",
+                              valueCard: value.temperature,
+                              iconCard: const Icon(Icons.thermostat)),
+                          Cardinfo(
+                              titleCard: "Humidité",
+                              valueCard: value.humidity,
+                              iconCard: const Icon(Icons.water_damage)),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
+                  ),
+                );
+              },
             )
           ],
         ),

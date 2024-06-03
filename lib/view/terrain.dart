@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:smartcontroller/controllers/controller.dart';
+import 'package:provider/provider.dart';
+import 'package:smartcontroller/controllers/bluetoothData.dart';
 import 'package:smartcontroller/components/cardinfo.dart';
-import '../controllers/controller.dart';
 
 class Terrain extends StatefulWidget {
   const Terrain({super.key});
@@ -11,18 +11,19 @@ class Terrain extends StatefulWidget {
   State<Terrain> createState() => _TerrainState();
 }
 
-
-
 class _TerrainState extends State<Terrain> {
-
+  late BluetoothData bluetoothData;
   @override
   void initState() {
-    listinigData();
+    bluetoothData =
+        Provider.of<BluetoothData>(context, listen: false);
+    bluetoothData.listinigData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    bluetoothData = Provider.of<BluetoothData>(context);
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(75),
@@ -44,66 +45,64 @@ class _TerrainState extends State<Terrain> {
                     bottomLeft: Radius.circular(25),
                     bottomRight: Radius.circular(25))),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.count(
+          Consumer<BluetoothData>(
+            builder: (context, value, child) {
+              return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.count(
                     crossAxisCount: 2,
                     children: [
                       Cardinfo(
                           titleCard: "cps1",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "cps2",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "cps3",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "cps4",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "cps5",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "cps6",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "cps7",
-                          valueCard: cps.toString(),
-                          iconCard: const Icon(Icons.place_outlined
-                        )
-                      ),
+                          valueCard: bluetoothData.cps,
+                          iconCard: const Icon(Icons.place_outlined)),
                       Cardinfo(
                           titleCard: "water Level",
-                          valueCard: capteur_water.toString(),
-                          iconCard: const Icon(Icons.water
-                        )
-                      ),
-                      Cardinfo(titleCard: "pompe3", valueCard: pompe3.toString(), iconCard: const  Icon(Icons.energy_savings_leaf_outlined)),
-                      Cardinfo(titleCard: "pompe4", valueCard: pompe5.toString(), iconCard: const  Icon(Icons.energy_savings_leaf_outlined)),
-                      Cardinfo(titleCard: "pompe5", valueCard: pompe5.toString(), iconCard: const Icon(Icons.energy_savings_leaf_outlined)),
-
+                          valueCard: bluetoothData.capteur_water,
+                          iconCard: const Icon(Icons.water)),
+                      Cardinfo(
+                          titleCard: "pompe3",
+                          valueCard: bluetoothData.pompe3,
+                          iconCard:
+                              const Icon(Icons.energy_savings_leaf_outlined)),
+                      Cardinfo(
+                          titleCard: "pompe4",
+                          valueCard: bluetoothData.pompe4,
+                          iconCard:
+                              const Icon(Icons.energy_savings_leaf_outlined)),
+                      Cardinfo(
+                          titleCard: "pompe5",
+                          valueCard: bluetoothData.pompe5,
+                          iconCard:
+                              const Icon(Icons.energy_savings_leaf_outlined)),
                     ],
+                  ));
+            },
           )
-        )
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
