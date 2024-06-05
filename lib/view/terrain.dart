@@ -93,11 +93,6 @@ class _TerrainState extends State<Terrain> {
                           valueCard: bluetoothData.capteur_water,
                           iconCard: const Icon(Icons.water)),
                       Cardinfo(
-                          titleCard: "extracteur",
-                          valueCard: bluetoothData.extracteur,
-                          iconCard: const Icon(Icons.water)
-                      ),
-                      Cardinfo(
                           titleCard: "pompe1",
                           valueCard: bluetoothData.pompe1,
                           iconCard:

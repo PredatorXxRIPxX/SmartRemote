@@ -55,7 +55,7 @@ class _SerreState extends State<Serre> {
   Widget build(BuildContext context) {
     bluetoothData = Provider.of<BluetoothData>(context);
     return Scaffold(
-      drawer: const Mydrawer(),
+        drawer: const Mydrawer(),
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(75),
             child: AppBar(
@@ -107,6 +107,16 @@ class _SerreState extends State<Serre> {
                                             .asyncMap((event) => bluetoothSerial
                                                 .getBondedDevices()),
                                         builder: (context, snapshot) {
+                                          if (snapshot.hasError) {
+                                            return const Center(
+                                                child: Text(
+                                              "Connected to device",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ));
+                                          }
+
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {
                                             return const Center(
