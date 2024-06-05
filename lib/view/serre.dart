@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:smartcontroller/components/mydrawer.dart';
+import 'package:smartcontroller/controllers/bluetoothData.dart';
 import 'package:provider/provider.dart';
 import 'package:smartcontroller/components/cardinfo.dart';
 import 'package:smartcontroller/controllers/bluetoothData.dart';
@@ -43,8 +45,7 @@ class _SerreState extends State<Serre> {
 
   @override
   void initState() {
-    bluetoothData =
-        Provider.of<BluetoothData>(context, listen: false);
+    bluetoothData = Provider.of<BluetoothData>(context, listen: false);
     initialiseBluetooth();
     stabeliseConnection();
     super.initState();
@@ -54,9 +55,16 @@ class _SerreState extends State<Serre> {
   Widget build(BuildContext context) {
     bluetoothData = Provider.of<BluetoothData>(context);
     return Scaffold(
+      drawer: const Mydrawer(),
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(75),
             child: AppBar(
+              leading: Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
+              ),
               title: const Text(
                 "Serre",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -128,14 +136,10 @@ class _SerreState extends State<Serre> {
                                                                   .all<Color>(Colors
                                                                       .deepPurple),
                                                           foregroundColor:
-                                                              MaterialStateProperty.all<
-                                                                      Color>(
-                                                                  const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      185,
-                                                                      135,
-                                                                      135))),
+                                                              MaterialStateProperty
+                                                                  .all<Color>(
+                                                                      Colors
+                                                                          .white)),
                                                       onPressed: () async {
                                                         try {
                                                           connection =
@@ -151,7 +155,8 @@ class _SerreState extends State<Serre> {
                                                               .listinigData();
                                                           bluetoothData
                                                               .notifyListeners();
-                                                          Navigator.pop(context);
+                                                          Navigator.pop(
+                                                              context);
                                                         } catch (e) {
                                                           print(
                                                               "failed to connect to device");

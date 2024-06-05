@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:smartcontroller/components/mydrawer.dart';
 import 'package:smartcontroller/controllers/bluetoothData.dart';
 import 'package:smartcontroller/components/cardinfo.dart';
 
@@ -25,9 +26,16 @@ class _TerrainState extends State<Terrain> {
   Widget build(BuildContext context) {
     bluetoothData = Provider.of<BluetoothData>(context);
     return Scaffold(
+      drawer: const Mydrawer(),
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(75),
           child: AppBar(
+            leading: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
             title: const Text(
               "Terrain",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -84,6 +92,22 @@ class _TerrainState extends State<Terrain> {
                           titleCard: "water Level",
                           valueCard: bluetoothData.capteur_water,
                           iconCard: const Icon(Icons.water)),
+                      Cardinfo(
+                          titleCard: "extracteur",
+                          valueCard: bluetoothData.extracteur,
+                          iconCard: const Icon(Icons.water)
+                      ),
+                      Cardinfo(
+                          titleCard: "pompe1",
+                          valueCard: bluetoothData.pompe1,
+                          iconCard:
+                              const Icon(Icons.energy_savings_leaf_outlined)),
+                      Cardinfo(
+                          titleCard: "pompe2",
+                          valueCard: bluetoothData.pompe2,
+                          iconCard:
+                              const Icon(Icons.energy_savings_leaf_outlined)
+                      ),
                       Cardinfo(
                           titleCard: "pompe3",
                           valueCard: bluetoothData.pompe3,
